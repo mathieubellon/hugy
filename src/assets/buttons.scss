@@ -1,0 +1,120 @@
+
+.button {
+  @apply inline-flex items-center px-2 py-1;
+  @apply transition ease-in-out duration-150;
+  @apply border border-transparent;
+  @apply text-xs leading-4 font-medium text-white bg-blue-600;
+  @apply rounded;
+  @apply transition ease-in-out duration-150;
+
+
+  &:hover{
+    @apply bg-blue-500;
+  }
+
+  &:active{
+    @apply bg-blue-700;
+  }
+  &:focus{
+    @apply outline-none;
+    @apply border-blue-700;
+    @apply shadow-outline-blue;
+  }
+}
+
+.button.is-red{
+  @apply text-white bg-red-600;
+  &:hover{
+    @apply bg-red-500;
+  }
+
+  &:active{
+    @apply bg-red-700;
+  }
+  &:focus{
+    @apply outline-none;
+    @apply border-red-700;
+    @apply shadow-outline-red;
+  }
+}
+
+.button.is-orange{
+  @apply text-white bg-orange-600;
+  &:hover{
+    @apply bg-orange-500;
+  }
+
+  &:active{
+    @apply bg-orange-700;
+  }
+  &:focus{
+    @apply outline-none;
+    @apply border-orange-700;
+    @apply shadow-outline-orange;
+  }
+}
+
+.button.is-gray {
+  @apply text-gray-900 bg-gray-50;
+  &:hover {
+    @apply bg-gray-500;
+  }
+
+  &:active {
+    @apply bg-gray-700;
+  }
+
+  &:focus {
+    @apply outline-none;
+    @apply border-gray-700;
+    @apply shadow-outline-gray;
+  }
+}
+
+.button.is-transparent {
+  @apply text-gray-900 bg-transparent;
+  &:hover {
+    @apply bg-gray-500;
+  }
+
+  &:active {
+    @apply bg-gray-700;
+  }
+
+  &:focus {
+    @apply outline-none;
+    @apply border-gray-700;
+    @apply shadow-outline-gray;
+  }
+}
+
+.button-group {
+  @apply relative inline-flex items-center px-2 py-1;
+  @apply border border-gray-300;
+  @apply bg-white text-sm leading-5;
+  @apply font-medium text-gray-700;
+  @apply transition ease-in-out duration-150;
+  &:hover{
+    @apply text-gray-500;
+  }
+  &:focus{
+    @apply z-10;
+    @apply outline-none;
+    @apply border-blue-300;
+    @apply shadow-outline-blue;
+  }
+
+  &:active{
+    @apply text-gray-700;
+  }
+
+  &.is-left{
+    @apply bg-gray-100;
+    @apply rounded-l-md;
+  }
+
+  &.is-right{
+    @apply rounded-r-md -ml-1;
+  }
+}
+

@@ -1,0 +1,20 @@
+{
+  "mac": {
+    "extraResources": [
+      {
+        "from": "resources/darwin",
+        "to": ".",
+        "filter": ["**/*"]
+      }
+    ]
+  },
+  "win": {
+    "extraResources": [
+      {
+        "from": "resources/win32",
+        "to": ".",
+        "filter": ["**/*"]
+      }
+    ]
+  }
+}
