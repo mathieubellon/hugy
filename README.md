@@ -12,8 +12,8 @@ Hugy is an Electron desktop app acting as a GUI for the [Hugo](https://gohugo.io
 
 Designed for copywriters onboarding Hugo projects without command line knowledge needed.
 
-## 🚨 *Warning - not production ready*
-This is a proof of concept at the moment. Test it but only on versionned Hugo projet.
+## 🚨 *Warning - not production ready - pre-alpha stage*
+This is a proof of concept at the moment, almost pre-alpha. Test it but only on versionned Hugo projet.
 
 ## Table of Contents
 
