@@ -32,7 +32,7 @@ to ask copywriters to use it in projects.
 
 Hugy assumes that your workflow is git-centered as it will allow the content editor to push changes to a git repo.
 
-## Features
+## Roadmap
 
 ### V1.0
 * Download available for Mac and Windows
@@ -47,7 +47,7 @@ Hugy assumes that your workflow is git-centered as it will allow the content edi
 * Create new content based on archetypes
 * Manage taxonomies
 * Manage menus
-* Configure Hugy with versionned config file
+* Configure Hugy with a versioned config file
 * Embedded documentation (Both for Hugy and Hugo)
 
 ## Screenshots
@@ -58,7 +58,7 @@ Hugy assumes that your workflow is git-centered as it will allow the content edi
 ### Manage Hugo
 <img src="https://user-images.githubusercontent.com/1445897/80204164-a5ff3080-8628-11ea-9fb8-546ec964c7bf.png" alt="console" width="100%" border="0">
 
-### Preview
+### Instant real preview
 <img src="https://user-images.githubusercontent.com/1445897/80203780-fde96780-8627-11ea-9f9d-d55fca7bd096.png" alt="live_edit" width="100%" border="0">
 
 
@@ -81,6 +81,4 @@ yarn electron:serve
 ```
 
 ### Compiles and minifies for production
-```
-yarn electron:build
-```
+Not working yet
