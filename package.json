@@ -6,7 +6,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "electron:build": "vue-cli-service electron:build",
+    "electron:build": "vue-cli-service electron:build --macos",
     "electron:serve": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
@@ -16,7 +16,6 @@
   },
   "main": "background.js",
   "dependencies": {
-    "@fullhuman/postcss-purgecss": "^2.1.2",
     "@octokit/rest": "^16.35.2",
     "@openid/appauth": "^1.2.6",
     "@saeris/vue-spinners": "^1.0.8",
