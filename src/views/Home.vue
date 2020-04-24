@@ -31,7 +31,7 @@ const { remote } = require("electron");
 import { homedir } from "os";
 import { mapMutations, mapState } from "vuex";
 
-import LogoHugo from "@/assets/logo/logo_hugo.svg";
+import LogoHugo from "@/assets/logo/hugo.svg";
 import Logo from "@/assets/logo/logo.svg";
 
 export default {

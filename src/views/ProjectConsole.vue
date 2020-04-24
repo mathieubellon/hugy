@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-3xl mx-auto">
+  <div class="max-w-3xl p-5 mx-auto">
 
     <div class="my-2 rounded-md bg-gray-50 px-6 py-5 sm:flex sm:items-start sm:justify-between">
       <div class="sm:flex sm:items-start">

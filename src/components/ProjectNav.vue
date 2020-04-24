@@ -27,7 +27,7 @@
 
 <script>
 import {mapState} from 'vuex'
-import LogoHugo from '@/assets/logo/logo_hugo.svg'
+import LogoHugo from '@/assets/logo/hugo.svg'
 export default {
     name: "ProjectNav",
     components:{

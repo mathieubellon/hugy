@@ -1,24 +1,54 @@
-# 🚨 Warning ️🚨
+<h1 align="center"> Hugy </h1> 
+<br>
+<a href="https://github.com/hbyio/hugy"><img src="https://raw.githubusercontent.com/hbyio/hugy/master/src/assets/logo/hugy/icon.svg" alt="icon-128x128-2x" height="200px" border="0"></a>
 
-This is a POC stage project. Test it but only on versionned Hugo projet.
 
-# hugy
+Hugy is an Electron desktop app acting as a GUI for the [Hugo](https://gohugo.io) static site generator.
 
-Hugy is a desktop (Electron) app aimed at content editors onboarding in projects using Hugo.io. 
+Designed for copywriters onboarding Hugo projects without command line knowledge needed.
+
+# 🚨 Warning
+This is a proof of concept at the moment. Test it but only on versionned Hugo projet.
+
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Features](#features)
+- [Feedback](#feedback)
+- [Development](#development)
+
+
+## Introduction
+
+Hugy is a desktop (Electron) app aimed at content editors onboarding projects using the [Hugo](https://gohugo.io) statis site genertor. 
 Static sites are great and Hugo is a great static site generator but due to its specifity (a command line tool) it may be hard
 to say to content editors to use it in projects.
 
 Hugy assumes that your workflow is git-centered as it will allow the content editor to push changes to your git repo.
 
-# Roadmap
+## Features
 
-In v1 Hugy will allow a content editor (on Windows and Mac) to clone (or create) a Hugo project, edit some content and push all the changes to Github or Gitlab.
-The UI will also serve as an "advanced tutorial" explaining Hugo related mechanics as the editor work on content (eg. if the copywriter add a new file we will explain that a new url will exists for this content because Hugo maps it ti files hierarchy)
+### V1.0
+* Download available for Mac and Windows
+* Create or clone Hugo project
+* Navigate content folder, add, edit content with a nice WYSIWYG tool
+* Manage project configuration (config.toml)
+* Live preview your website as you edit content
+* Manage multiples local versions of your website. Rollback changes.
+* Publish (push) your changes
 
-We also plan to allow a developper to configure Hugy UI with a special config .hugy file  (for example to disabled config.toml edition of certain fields) 
+### V1.x
+* Create new content based on archetypes
+* Manage taxonomies
+* Manage menus
+* Configure Hugy with versionned config file
+* Embedded documentation (Both for Hugy and Hugo)
+
+## Feedback
+Use github issues.
 
 
-# Development
+## Development
 
 Clone the repo and ..
 
