@@ -1,8 +1,12 @@
 <h1 align="center"> Hugy </h1> 
 <br>
-<a href="https://github.com/hbyio/hugy"><img src="https://raw.githubusercontent.com/hbyio/hugy/master/src/assets/logo/hugy/icon.svg" alt="icon-128x128-2x" height="200px" border="0"></a>
 
-The *dead simple* Hugo companion
+<p align="center">
+<a href="https://github.com/hbyio/hugy"><img src="https://raw.githubusercontent.com/hbyio/hugy/master/src/assets/logo/hugy/icon.svg" alt="icon-128x128-2x" height="200px" border="0"></a>
+</p>
+<h2 align="center">
+The <strong>dead simple</strong> Hugo companion.
+</h2>
 
 Hugy is an Electron desktop app acting as a GUI for the [Hugo](https://gohugo.io) static site generator.
 
@@ -49,13 +53,13 @@ Hugy assumes that your workflow is git-centered as it will allow the content edi
 ## Screenshots
 
 ### Live edit
-<img src="https://raw.githubusercontent.com/hbyio/hugy/master/documentation/images/live_edit" alt="live_edit" width="100%" border="0">
+<img src="https://user-images.githubusercontent.com/1445897/80204154-a13a7c80-8628-11ea-8b4f-44c0c6133c37.png" alt="live_edit" width="100%" border="0">
 
 ### Manage Hugo
-<img src="https://raw.githubusercontent.com/hbyio/hugy/master/documentation/images/console" alt="console" width="100%" border="0">
+<img src="https://user-images.githubusercontent.com/1445897/80204164-a5ff3080-8628-11ea-9fb8-546ec964c7bf.png" alt="console" width="100%" border="0">
 
 ### Preview
-<img src="https://raw.githubusercontent.com/hbyio/hugy/master/documentation/images/preview" alt="live_edit" width="100%" border="0">
+<img src="https://user-images.githubusercontent.com/1445897/80203780-fde96780-8627-11ea-9f9d-d55fca7bd096.png" alt="live_edit" width="100%" border="0">
 
 
 ## Feedback
