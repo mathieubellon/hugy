@@ -11,9 +11,9 @@ const resourcesPath = remote.app.isPackaged
   ? path.dirname(remote.app.getAppPath())
   : path.resolve('resources/' + platform())
 
-let gitPath = 'git'
+/*let gitPath = 'git'
 if(process.platform == "win32"){
     gitPath = path.join(resourcesPath, 'PortableGit', 'bin', 'git')
-}
+}*/
 
-export {gitPath, resourcesPath}
+export {resourcesPath}
