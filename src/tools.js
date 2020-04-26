@@ -13,7 +13,7 @@ var htmlparse = require('rehype-parse')
 var stringify = require('remark-stringify')
 // var frontmatter = require('remark-frontmatter')
 
-export function md2html(md: string): string {
+export function md2html(md) {
   let processor = unified()
     .use(markdown)
     .use(remark2rehype)
@@ -23,7 +23,7 @@ export function md2html(md: string): string {
   return htmltext
 }
 
-export function html2md(htmltext: string): string {
+export function html2md(htmltext) {
   let processor = unified()
     .use(htmlparse)
     .use(rehype2remark)
@@ -32,7 +32,7 @@ export function html2md(htmltext: string): string {
   return md
 }
 
-export function html2txt(htmltext: string): string {
+export function html2txt(htmltext) {
   let processor = unified()
     .use(htmlparse)
     .use(rehype2remark)

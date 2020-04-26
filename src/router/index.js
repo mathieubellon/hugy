@@ -18,28 +18,28 @@ const routes = [
     name: 'home',
     component: Home
   },
- {
+  {
     path: '/projectfiles/:currentDir',
     name: 'projectfiles',
-    components: {default: ProjectFiles, navbar: ProjectNav},
+    components: { default: ProjectFiles, navbar: ProjectNav },
   },
   {
     path: '/projectsettings',
     name: 'projectsettings',
-    components: {default: ProjectSettings, navbar: ProjectNav},
-    props: {default: true, navbar: false}
+    components: { default: ProjectSettings, navbar: ProjectNav },
+    props: { default: true, navbar: false }
   },
   {
     path: '/projectconsole',
     name: 'projectconsole',
-    components: {default: ProjectConsole, navbar: ProjectNav},
-    props: {default: true, navbar: false}
+    components: { default: ProjectConsole, navbar: ProjectNav },
+    props: { default: true, navbar: false }
   },
   {
     path: '/projectpublish',
     name: 'projectpublish',
-    components: {default: ProjectPublish, navbar: ProjectNav},
-    props: {default: true, navbar: false}
+    components: { default: ProjectPublish, navbar: ProjectNav },
+    props: { default: true, navbar: false }
   },
 
   {
@@ -60,6 +60,10 @@ const routes = [
     // which is lazy-loaded when the route is visited.
     component: () =>
       import(/* webpackChunkName: "about" */ '../views/About.vue')
+  },
+  {
+    path: '*',
+    redirect: '/'
   }
 ]
 
@@ -68,5 +72,5 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
-
+console.log(router)
 export default router

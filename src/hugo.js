@@ -1,4 +1,3 @@
-const execa = require('execa');
 const { spawn } = require("child_process");
 import { resourcesPath } from "@/resources"; // Path to resources.ts
 import path from "path";
@@ -9,7 +8,7 @@ import { launchWindow } from "@/preview"
 
 const hugoBin = path.join(resourcesPath, "hugo");
 
-function newSite(siteDir: string) {
+function newSite(siteDir) {
     //hugo new site /Users/matthieu/Downloads/donnasummer -v --log --logFile=logs --force
     let hugoParams = [
         "new",
@@ -26,7 +25,7 @@ function newSite(siteDir: string) {
     }
 }
 
-function runserver(siteDir: string) {
+function runserver(siteDir) {
     store.commit("toggleServerIsLaunching", true)
     let hugoParams = [
         "server",
@@ -51,7 +50,7 @@ function runserver(siteDir: string) {
     // this.setHugoServer(process);
     console.info("spawned process", hugoProcess.pid);
     //
-    hugoProcess.stdout.on("data", (data: any) => {
+    hugoProcess.stdout.on("data", (data) => {
         console.log(String(data))
         store.commit('logToConsole', String(data))
         if (String(data).match(/spawned successfully/)) {
@@ -69,16 +68,24 @@ function runserver(siteDir: string) {
         }
     });
     //
-    hugoProcess.stderr.on("data", (data: any) => {
+    hugoProcess.stderr.on("data", (data) => {
         console.log(String(data))
         store.commit('logToConsole', String(data))
     });
     //
-    hugoProcess.on("close", (code: any) => {
+    hugoProcess.on("close", (code) => {
         console.info(`child process closed with code ${code}`);
+        store.commit('logToConsole', `child process closed with code ${code}`)
+        store.commit('setHugoServerPort', null)
+        store.commit('setHugoServer', null)
+        store.commit("toggleServerIsLaunching", false)
     });
-    hugoProcess.on("error", (code: any) => {
+    hugoProcess.on("error", (code) => {
         console.error(`child process errored with code ${code}`);
+        store.commit('logToConsole', `child process errored with code ${code}`)
+        store.commit('setHugoServerPort', null)
+        store.commit('setHugoServer', null)
+        store.commit("toggleServerIsLaunching", false)
     });
 
 

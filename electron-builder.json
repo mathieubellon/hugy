@@ -1,20 +1,25 @@
 {
-  "mac": {
-    "extraResources": [
-      {
-        "from": "resources/darwin",
-        "to": ".",
-        "filter": ["**/*"]
-      }
-    ]
-  },
-  "win": {
-    "extraResources": [
-      {
-        "from": "resources/win32",
-        "to": ".",
-        "filter": ["**/*"]
-      }
-    ]
-  }
+    "appId": "io.hby.hugy",
+    "mac": {
+        "extraResources": [
+            {
+                "from": "resources/darwin",
+                "to": ".",
+                "filter": [
+                    "**/*"
+                ]
+            }
+        ]
+    },
+    "win": {
+        "extraResources": [
+            {
+                "from": "resources/win32",
+                "to": ".",
+                "filter": [
+                    "**/*"
+                ]
+            }
+        ]
+    }
 }

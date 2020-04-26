@@ -1,7 +1,7 @@
 const electron = require("electron");
 const remote = electron.remote;
 
-export function launchWindow(host: string, port: number) {
+export function launchWindow(host, port) {
 
     var win = remote.getCurrentWindow();
     let previewWindow = new remote.BrowserWindow({
