@@ -50,7 +50,7 @@ const store = new Vuex.Store({
       state.serverIsLaunching = islaunching
     },
     logToConsole(state, msg) {
-      state.console.push(msg)
+      state.console.push({ time: Date(), msg: msg })
     },
   },
   actions: {},

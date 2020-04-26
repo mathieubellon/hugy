@@ -1,6 +1,5 @@
 <template>
   <div class="max-w-3xl p-5 mx-auto">
-
     <div class="my-2 rounded-md bg-gray-50 px-6 py-5 sm:flex sm:items-start sm:justify-between">
       <div class="sm:flex sm:items-start">
         <Process />
@@ -37,7 +36,12 @@
     </div>
 
     <div class="console-screen break-words flex-grow" v-if="console && console.length > 0">
-      <pre class="my-2 text-xs even:bg-gray-200" v-for="msg in console" v-html="msg"></pre>
+      <pre
+        class="my-2 text-xs even:bg-gray-200"
+        v-for="output in console"
+        v-html="output.msg"
+        :key="output.time"
+      ></pre>
     </div>
     <div v-else class="console-screen">
       <div>Hugo is not running</div>
@@ -55,7 +59,7 @@ const { shell } = require("electron");
 export default {
   name: "Console",
   components: {
-    Process,
+    Process
   },
   computed: {
     ...mapState([
