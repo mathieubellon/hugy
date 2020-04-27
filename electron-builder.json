@@ -1,6 +1,8 @@
 {
     "appId": "io.hby.hugy",
     "mac": {
+        "target": "dir",
+        "icon": "build/icons/icon.icns",
         "extraResources": [
             {
                 "from": "resources/darwin",
@@ -12,6 +14,7 @@
         ]
     },
     "win": {
+        "icon": "build/icons/icon.ico",
         "extraResources": [
             {
                 "from": "resources/win32",

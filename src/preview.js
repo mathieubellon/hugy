@@ -3,7 +3,6 @@ const remote = electron.remote;
 
 export function launchWindow(host, port) {
 
-    var win = remote.getCurrentWindow();
     let previewWindow = new remote.BrowserWindow({
         width: 800,
         height: 800

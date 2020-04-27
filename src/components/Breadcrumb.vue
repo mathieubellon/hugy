@@ -40,7 +40,6 @@ export default {
       //let relativeBase = path.relative ('', this.projectPath)
 
       let navigo = [];
-      let l = splitter.length;
       let recurnav = this.youarehere;
       for (let i = 0; i < splitter.length; i++) {
         if (!recurnav.includes(topfolder)) break;
