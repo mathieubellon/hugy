@@ -13,7 +13,7 @@ Hugy is an Electron desktop app acting as a GUI for the [Hugo](https://gohugo.io
 Designed for copywriters onboarding Hugo projects without command line knowledge needed.
 
 ## 🚨 *Warning - not production ready - pre-alpha stage*
-This is a proof of concept at the moment, almost pre-alpha. Test it but only on versionned Hugo projet.
+This is a proof of concept at the moment, almost pre-alpha. Test it but only on versioned Hugo projects.
 
 ## Table of Contents
 
@@ -26,9 +26,8 @@ This is a proof of concept at the moment, almost pre-alpha. Test it but only on 
 
 ## Introduction
 
-Hugy is a desktop (Electron) app aimed at content editors onboarding projects using the [Hugo](https://gohugo.io) static site genertor. 
-Static sites are great and Hugo is a great static site generator but due to its specifity (a command line tool) it may be hard
-to ask copywriters to use it in projects.
+Hugy is a desktop (Electron) app aimed at content editors onboarding projects using the [Hugo](https://gohugo.io) static site generator. 
+Static sites are great and Hugo is a great static site generator, but due to its technical nature (a command line tool) it may be hard to ask copywriters to use it in projects.
 
 Hugy assumes that your workflow is git-centered as it will allow the content editor to push changes to a git repo.
 
@@ -63,7 +62,7 @@ Hugy assumes that your workflow is git-centered as it will allow the content edi
 
 
 ## Feedback
-Use github issues. We probably will create a discourse/Gitter space a the near future.
+Use GitHub issues. We probably will create a discourse/Gitter space in the near future.
 
 
 ## Development
