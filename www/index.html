@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Golang Todo App WebSocket</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.0/css/bulma.min.css">
+	<script defer src="https://use.fontawesome.com/releases/v5.0.7/js/all.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script  src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+<!--[if lt IE 7]>
+<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+
+<script type="text/x-template" id="task-list-tpl">
+	<div>
+		<ul>
+			<li v-for="item in tasks">{{item}}</li>
+		</ul>
+		<task-adder></task-adder>
+	</div>
+</script>
+<script>
+	Vue.component("task-list", {
+		template: "#task-list-tpl",
+		data() {
+			return {
+				tasks: []
+			}
+		},
+		methods: {
+			refresh() {
+				axios.get("/all").then(resp => {
+					this.tasks = resp.data
+				})
+			}
+		},
+		mounted() {
+			bus.$on("databaseChanged", evt => {
+				this.refresh()
+			})
+			this.refresh()
+		},
+	})
+</script>
+
+
+<script type="text/x-template" id="task-adder-tpl">
+	<div>
+		<input v-model="content" />
+		<button @click="Broadcast">Broadcast</button>
+		<button @click="Add">Add</button>
+	</div>
+</script>
+<script>
+	Vue.component("task-adder", {
+		template: "#task-adder-tpl",
+		data() {
+			return {
+				content: "",
+				ws: ""
+			}
+		},
+		methods: {
+			Broadcast() {
+				this.ws.send(this.content)
+			},
+			Add() {
+				axios.put("/add", {
+					task: this.content
+				}).then(resp => {
+					this.content = ""
+					bus.$emit("databaseChanged",null)
+				}).catch(resp => {
+					console.error(resp)
+				})
+			},
+		},
+		mounted() {
+			var loc = window.location;
+			var uri = 'ws:';
+
+			if (loc.protocol === 'https:') {
+				uri = 'wss:';
+			}
+			uri += '//' + loc.host;
+			uri += loc.pathname + 'ws';
+			this.ws = new WebSocket(uri)
+
+			this.ws.onconnect = (evt) => {
+				console.log("ws connected", evt)
+			}
+			this.ws.onclose = (evt) => {
+				console.log("ws closed", evt)
+			}
+			this.ws.onmessage = (evt) => {
+				bus.$emit("databaseChanged", evt)
+				console.log("ws got message", evt)
+			}
+		}
+	})
+</script>
+
+
+<section class="hero is-primary">
+	<div class="hero-body">
+		<div class="container">
+			<h1 class="title">
+				Task list
+			</h1>
+			<h2 class="subtitle">
+				Golang + WebSocket / VueJs + Bulma
+			</h2>
+		</div>
+	</div>
+</section>
+<section class="section">
+	<div class="container">
+		<h1 class="title">
+			TODO APP
+		</h1>
+		<div id="app">
+			<task-list></task-list>
+		</div>
+	</div>
+</section>
+<script>
+	var bus = new Vue()
+	new Vue({
+		el: '#app'
+	});
+</script>
+
+</body>
+
+</html>

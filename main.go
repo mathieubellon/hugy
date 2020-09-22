@@ -1,34 +1,70 @@
-/*
-Copyright © 2020 NAME HERE <EMAIL ADDRESS>
+//go:generate go run -tags generate gen.go
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
 package main
 
 import (
-	"github.com/zserge/lorca"
-
 	"flag"
+	"github.com/gorilla/websocket"
+	"github.com/zserge/lorca"
 	"html/template"
 	"log"
 	"net/http"
-
-	"github.com/gorilla/websocket"
+	"os"
+	"os/exec"
+	"os/signal"
+	"runtime"
 )
 
 var addr = flag.String("addr", "localhost:8090", "http service address")
 
 var upgrader = websocket.Upgrader{} // use default options
+
+var cmd *exec.Cmd
+
+func main() {
+	args := []string{}
+	if runtime.GOOS == "linux" {
+		args = append(args, "--class=Lorca")
+	}
+	ui, err := lorca.New("", "", 480, 320, args...)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer ui.Close()
+
+	// A simple way to know when UI is ready (uses body.onload event in JS)
+	ui.Bind("start", func() {
+		log.Println("UI is ready")
+	})
+
+	// Start WS
+	flag.Parse()
+	log.SetFlags(0)
+	http.HandleFunc("/echo", echo)
+	http.HandleFunc("/", home)
+	go http.ListenAndServe("127.0.0.1:8090", nil)
+
+	// Load HTML.
+
+	ui.Load("http:/127.0.0.1:8090")
+
+	// You may use console.log to debug your JS code, it will be printed via
+	// log.Println(). Also exceptions are printed in a similar manner.
+	ui.Eval(`
+		console.log("Hello, world!");
+		console.log('Multiple values:', [1, false, {"x":5}]);
+	`)
+
+	// Wait until the interrupt signal arrives or browser window is closed
+	sigc := make(chan os.Signal)
+	signal.Notify(sigc, os.Interrupt)
+	select {
+	case <-sigc:
+	case <-ui.Done():
+	}
+
+	log.Println("exiting...")
+}
 
 func echo(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
@@ -54,14 +90,6 @@ func echo(w http.ResponseWriter, r *http.Request) {
 
 func home(w http.ResponseWriter, r *http.Request) {
 	homeTemplate.Execute(w, "ws://"+r.Host+"/echo")
-}
-
-func startServer() {
-	flag.Parse()
-	log.SetFlags(0)
-	http.HandleFunc("/echo", echo)
-	http.HandleFunc("/", home)
-	log.Fatal(http.ListenAndServe(*addr, nil))
 }
 
 var homeTemplate = template.Must(template.New("").Parse(`
@@ -117,7 +145,7 @@ window.addEventListener("load", function(evt) {
 });
 </script>
 </head>
-<body style="background-color:#F5F5F5;">
+<body>
 <table>
 <tr><td valign="top" width="50%">
 <p>Click "Open" to create a connection to the server, 
@@ -136,19 +164,3 @@ You can change the message and send multiple times.
 </body>
 </html>
 `))
-
-func main() {
-
-	go startServer()
-
-	// Create UI with basic HTML passed via data URI
-	ui, err := lorca.New("http://localhost:8090", "", 480, 320)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer ui.Close()
-	// Wait until UI window is closed
-	<-ui.Done()
-
-}
