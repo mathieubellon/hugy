@@ -9,12 +9,15 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 )
 
 type HugoServer struct {
 	arguments string
 	cmd       *cmd.Cmd
 	ws        *websocket.Conn
+	isRunning bool
+	PID       int
 }
 
 func (hs *HugoServer) openWs(w http.ResponseWriter, r *http.Request) {
@@ -38,45 +41,64 @@ func (hs *HugoServer) openWs(w http.ResponseWriter, r *http.Request) {
 }
 
 func (hs *HugoServer) start() {
-
-	log.Println("Run called")
+	wg := new(sync.WaitGroup)
+	wg.Add(2)
 	cmdOptions := cmd.Options{
 		Buffered:  false,
 		Streaming: true,
 	}
 	hs.cmd = cmd.NewCmdOptions(cmdOptions, "hugo", strings.Split("server /users/matthieu/apps/www.hby.io", " ")...)
-
-	// Print STDOUT and STDERR lines streaming from Cmd
-	doneChan := make(chan struct{})
 	go func() {
-		defer close(doneChan)
-		// Done when both channels have been closed
-		// https://dave.cheney.net/2013/04/30/curious-channels
-		for hs.cmd.Stdout != nil || hs.cmd.Stderr != nil {
-			select {
-			case line, open := <-hs.cmd.Stdout:
-				if !open {
-					hs.cmd.Stdout = nil
-					continue
+		log.Println("Run called")
+		statusChan := hs.cmd.Start() // non-blocking
+		hs.isRunning = true
+		// Print STDOUT and STDERR lines streaming from Cmd
+		doneChan := make(chan struct{})
+		go func() {
+			defer close(doneChan)
+			// Done when both channels have been closed
+			// https://dave.cheney.net/2013/04/30/curious-channels
+			for hs.cmd.Stdout != nil || hs.cmd.Stderr != nil {
+				select {
+				case line, open := <-hs.cmd.Stdout:
+					if !open {
+						hs.cmd.Stdout = nil
+						continue
+					}
+					fmt.Println(line)
+					hs.ws.WriteMessage(websocket.TextMessage, []byte(line))
+				case line, open := <-hs.cmd.Stderr:
+					if !open {
+						hs.cmd.Stderr = nil
+						continue
+					}
+					fmt.Fprintln(os.Stderr, line)
 				}
-				fmt.Println(line)
-			case line, open := <-hs.cmd.Stderr:
-				if !open {
-					hs.cmd.Stderr = nil
-					continue
-				}
-				fmt.Fprintln(os.Stderr, line)
 			}
-		}
+		}()
+		// Run Hugo server
+		// Start a long-running process, capture stdout and stderr
+		<-statusChan
+		// Block waiting for command to exit, be stopped, or be killed
+		<-doneChan
+		wg.Done()
 	}()
 
-	// Run Hugo server
-	fmt.Printf("error 1 starting %s\n", hs.cmd.Status().Error)
-	// Start a long-running process, capture stdout and stderr
-	<-hs.cmd.Start() // non-blocking
-	fmt.Printf("error starting %s\n", hs.cmd.Status().Error)
-	// Block waiting for command to exit, be stopped, or be killed
-	<-doneChan
+	// Print last line of stdout every 2s
+	go func() {
+		for {
+			hs.PID = hs.cmd.Status().PID
+			if hs.PID > 0 {
+				fmt.Printf("$$$$$$$$$$$$$$$$$$$$$$$\n\n %s", hs.PID)
+				hs.ws.WriteMessage(websocket.TextMessage, []byte(fmt.Sprintf("Server status found : %#v", hs.cmd.Status())))
+				break
+			}
+		}
+		wg.Done()
+	}()
+
+	wg.Wait()
+
 }
 
 func (hs *HugoServer) status() string {
@@ -99,6 +121,6 @@ func (hs *HugoServer) stop() string {
 	if err != nil {
 		log.Fatalf("Erro trying to stop server : %s", err)
 	}
-
+	hs.isRunning = false
 	return "Server stopped"
 }

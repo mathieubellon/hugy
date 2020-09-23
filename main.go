@@ -37,20 +37,29 @@ func main() {
 	//w.Navigate("https://en.m.wikipedia.org/wiki/Main_Page")
 	//w.Run()
 
-	ui, err := lorca.New("", "", 700, 700)
+	ui, err := lorca.New("", "", 700, 1400)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer ui.Close()
 
-	hugoServer := HugoServer{}
+	hugoServer := HugoServer{
+		isRunning: false,
+	}
 
+	http.HandleFunc("/ws", hugoServer.openWs)
 	http.HandleFunc("/", serveHome)
 	go http.ListenAndServe(SERVER_URL, nil)
 
 	// A simple way to know when UI is ready (uses body.onload event in JS)
-	ui.Bind("startserver", func() {
-		hugoServer.start()
+	ui.Bind("startserver", func() string {
+		if hugoServer.isRunning {
+			log.Print("Server already running")
+			return fmt.Sprint("Server already running")
+		} else {
+			hugoServer.start()
+			return fmt.Sprint("Server exit")
+		}
 	})
 
 	ui.Bind("serverstatus", func() string {

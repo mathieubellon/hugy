@@ -32,9 +32,9 @@
                 <button @click="StatusHugoServer">StatusHugoServer</button>
                 <button @click="VersionHugoServer">VersionHugoServer</button>
             </div>
-            <pre>
-            {{content}}
-        </pre>
+            <div class="console-screen break-words flex-grow" v-if="console && console.length > 0">
+                <div class="my-2 text-xs even:bg-gray-200" v-for="msg in console" v-html="msg"></div>
+            </div>
         </div>
     </section>
 </div>
@@ -44,7 +44,7 @@
             el: '#app',
             data() {
                 return {
-                    content: [],
+                    console: [],
                     version:"",
                     ws: ""
                 }
@@ -53,8 +53,13 @@
                 async StartHugoServer() {
                     console.log("start hugo server")
                     window.startserver().then(resp=>{
-                        console.log(resp)
-                        this.content.push(resp)
+                        console.log("starter : " + resp)
+                        if (resp == "Server already running") {
+                            this.StatusHugoServer()
+                        }else{
+                            this.console = []
+                            this.console.push(resp)
+                        }
                     }).catch(err=>{
                         console.log(err)
                     })
@@ -62,7 +67,7 @@
                 StatusHugoServer() {
                     window.serverstatus().then(resp=>{
                         console.log(resp)
-                        this.content.push(resp)
+                        this.console.push(resp)
                     }).catch(err=>{
                         console.log(err)
                     })
@@ -70,7 +75,7 @@
                 StopHugoServer() {
                     window.stopserver().then(resp=>{
                         console.log(resp)
-                        this.content.push(resp)
+                        this.console.push(resp)
                     }).catch(err=>{
                         console.log(err)
                     })
@@ -103,7 +108,7 @@
                 }
                 this.ws.onmessage = (evt) => {
                     console.log("ws got message", evt.data)
-                    this.content = evt.data
+                    this.console.push(evt.data)
                 }
                 this.VersionHugoServer()
             }
