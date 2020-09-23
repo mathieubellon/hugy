@@ -3,50 +3,124 @@
 package main
 
 import (
-	"flag"
+	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/zserge/lorca"
-	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"os/exec"
 	"os/signal"
-	"runtime"
+	"strings"
+
+	"github.com/go-cmd/cmd"
 )
 
-var addr = flag.String("addr", "localhost:8090", "http service address")
+var upgrader = websocket.Upgrader{}
 
-var upgrader = websocket.Upgrader{} // use default options
+const SERVER_URL string = "127.0.0.1:8090"
 
-var cmd *exec.Cmd
+func serveHome(w http.ResponseWriter, r *http.Request) {
+	index, err := ioutil.ReadFile("www/index.html")
+	if err != nil {
+		log.Fatalf("Error opening index file : %s", err)
+	}
+	fmt.Fprintf(w, "%s", index)
+}
 
 func main() {
-	args := []string{}
-	if runtime.GOOS == "linux" {
-		args = append(args, "--class=Lorca")
-	}
-	ui, err := lorca.New("", "", 480, 320, args...)
+	// Enable line numbers in logging
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	//log.SetFlags(0)
+	//debug := true
+	//w := webview.New(debug)
+	//defer w.Destroy()
+	//w.SetTitle("Minimal webview example")
+	//w.SetSize(800, 600, webview.HintNone)
+	//w.Navigate("https://en.m.wikipedia.org/wiki/Main_Page")
+	//w.Run()
+
+	ui, err := lorca.New("", "", 700, 700)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer ui.Close()
+	cmdOptions := cmd.Options{
+		Buffered:  false,
+		Streaming: true,
+	}
+	hugoServer := HugoServer{
+		cmd: cmd.NewCmdOptions(cmdOptions, "hugo", strings.Split("server /users/matthieu/apps/www.hby.io", " ")...),
+	}
+
+	http.HandleFunc("/", serveHome)
+	go http.ListenAndServe(SERVER_URL, nil)
 
 	// A simple way to know when UI is ready (uses body.onload event in JS)
-	ui.Bind("start", func() {
-		log.Println("UI is ready")
+	ui.Bind("startserver", func() {
+		log.Println("Run called")
+
+		// Print STDOUT and STDERR lines streaming from Cmd
+		doneChan := make(chan struct{})
+		go func() {
+			defer close(doneChan)
+			// Done when both channels have been closed
+			// https://dave.cheney.net/2013/04/30/curious-channels
+			for hugoServer.cmd.Stdout != nil || hugoServer.cmd.Stderr != nil {
+				select {
+				case line, open := <-hugoServer.cmd.Stdout:
+					if !open {
+						hugoServer.cmd.Stdout = nil
+						continue
+					}
+					fmt.Println(line)
+				case line, open := <-hugoServer.cmd.Stderr:
+					if !open {
+						hugoServer.cmd.Stderr = nil
+						continue
+					}
+					fmt.Fprintln(os.Stderr, line)
+				}
+			}
+		}()
+
+		// Run Hugo server
+		fmt.Printf("error 1 starting %s\n", hugoServer.cmd.Status().Error)
+		// Start a long-running process, capture stdout and stderr
+		<-hugoServer.cmd.Start() // non-blocking
+		fmt.Printf("error starting %s\n", hugoServer.cmd.Status().Error)
+		// Block waiting for command to exit, be stopped, or be killed
+		<-doneChan
 	})
 
-	// Start WS
-	flag.Parse()
-	log.SetFlags(0)
-	http.HandleFunc("/echo", echo)
-	http.HandleFunc("/", home)
-	go http.ListenAndServe("127.0.0.1:8090", nil)
+	ui.Bind("serverstatus", func() string {
+		log.Println("Status called")
+		return fmt.Sprintf("%#v", hugoServer.cmd.Status())
+	})
+
+	ui.Bind("serverversion", func() string {
+		log.Println("Status called")
+		serverversion, err := exec.Command("hugo", "version").Output()
+		if err != nil {
+			log.Printf("Command finished with error: %v", err)
+		}
+		return fmt.Sprintf("%v", string(serverversion))
+	})
+
+	// A simple way to know when UI is ready (uses body.onload event in JS)
+	ui.Bind("stopserver", func() string {
+		log.Println("Stop called")
+		err := hugoServer.cmd.Stop()
+		if err != nil {
+			log.Fatalf("Erro trying to stop server : %s", err)
+		}
+
+		return "Server stopped"
+	})
 
 	// Load HTML.
-
-	ui.Load("http:/127.0.0.1:8090")
+	ui.Load("http://" + SERVER_URL)
 
 	// You may use console.log to debug your JS code, it will be printed via
 	// log.Println(). Also exceptions are printed in a similar manner.
@@ -63,104 +137,13 @@ func main() {
 	case <-ui.Done():
 	}
 
+	// Do not let this process hang
+	defer func() {
+		err := hugoServer.cmd.Stop()
+		if err != nil {
+			log.Fatalf("Error killing hugo server cmd : %s", err)
+		}
+	}()
+
 	log.Println("exiting...")
 }
-
-func echo(w http.ResponseWriter, r *http.Request) {
-	c, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Print("upgrade:", err)
-		return
-	}
-	defer c.Close()
-	for {
-		mt, message, err := c.ReadMessage()
-		if err != nil {
-			log.Println("read:", err)
-			break
-		}
-		log.Printf("recv: %s", message)
-		err = c.WriteMessage(mt, message)
-		if err != nil {
-			log.Println("write:", err)
-			break
-		}
-	}
-}
-
-func home(w http.ResponseWriter, r *http.Request) {
-	homeTemplate.Execute(w, "ws://"+r.Host+"/echo")
-}
-
-var homeTemplate = template.Must(template.New("").Parse(`
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<script>  
-window.addEventListener("load", function(evt) {
-    var output = document.getElementById("output");
-    var input = document.getElementById("input");
-    var ws;
-    var print = function(message) {
-        var d = document.createElement("div");
-        d.textContent = message;
-        output.appendChild(d);
-    };
-    document.getElementById("open").onclick = function(evt) {
-        if (ws) {
-            return false;
-        }
-        ws = new WebSocket("{{.}}");
-        ws.onopen = function(evt) {
-            print("OPEN");
-        }
-        ws.onclose = function(evt) {
-            print("CLOSE");
-            ws = null;
-        }
-        ws.onmessage = function(evt) {
-            print("RESPONSE: " + evt.data);
-        }
-        ws.onerror = function(evt) {
-            print("ERROR: " + evt.data);
-        }
-        return false;
-    };
-    document.getElementById("send").onclick = function(evt) {
-        if (!ws) {
-            return false;
-        }
-        print("SEND: " + input.value);
-        ws.send(input.value);
-        return false;
-    };
-    document.getElementById("close").onclick = function(evt) {
-        if (!ws) {
-            return false;
-        }
-        ws.close();
-        return false;
-    };
-});
-</script>
-</head>
-<body>
-<table>
-<tr><td valign="top" width="50%">
-<p>Click "Open" to create a connection to the server, 
-"Send" to send a message to the server and "Close" to close the connection. 
-You can change the message and send multiple times.
-<p>
-<form>
-<button id="open">Open</button>
-<button id="close">Close</button>
-<p><input id="input" type="text" value="Hello world!">
-<button id="send">Send</button>
-</form>
-</td><td valign="top" width="50%">
-<div id="output"></div>
-</td></tr></table>
-</body>
-</html>
-`))
