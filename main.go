@@ -5,8 +5,9 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/websocket"
+	"github.com/markbates/pkger"
 	"github.com/zserge/lorca"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -18,11 +19,27 @@ var upgrader = websocket.Upgrader{}
 const SERVER_URL string = "127.0.0.1:8090"
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
-	index, err := ioutil.ReadFile("www/index.html")
+	f, err := pkger.Open("/www/index.html")
 	if err != nil {
 		log.Fatalf("Error opening index file : %s", err)
 	}
-	fmt.Fprintf(w, "%s", index)
+	defer f.Close()
+	if err != nil {
+		log.Fatalf("Error opening index file : %s", err)
+	}
+	io.Copy(w, f)
+}
+
+func serveFavicon(w http.ResponseWriter, r *http.Request) {
+	f, err := pkger.Open("/www/favicon.png")
+	if err != nil {
+		log.Fatalf("Error opening favicon file : %s", err)
+	}
+	defer f.Close()
+	if err != nil {
+		log.Fatalf("Error opening favicon file : %s", err)
+	}
+	io.Copy(w, f)
 }
 
 func main() {
@@ -49,6 +66,7 @@ func main() {
 
 	http.HandleFunc("/ws", hugoServer.openWs)
 	http.HandleFunc("/", serveHome)
+	http.HandleFunc("/favicon.png", serveFavicon)
 	go http.ListenAndServe(SERVER_URL, nil)
 
 	// A simple way to know when UI is ready (uses body.onload event in JS)
