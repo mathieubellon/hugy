@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/go-cmd/cmd"
 	"github.com/gorilla/websocket"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -21,15 +22,7 @@ type HugoServer struct {
 
 func HugoBinary() string {
 	binName := "hugo"
-	//path, err := exec.LookPath("hugo")
-	//if err != nil {
-	//	log.Printf(" Error finding binary : %s", err)
-	//}
-
-	currentDir, _ := os.Getwd()
-	hugoAbsPath := currentDir + "bin/" + binName
-	log.Printf("Hugo path %s", hugoAbsPath)
-	return hugoAbsPath
+	return "./bin/" + binName
 }
 
 func (hs *HugoServer) openWs(w http.ResponseWriter, r *http.Request) {
@@ -119,9 +112,17 @@ func (hs *HugoServer) status() string {
 }
 
 func (hs *HugoServer) version() string {
-	log.Println("Status called")
-	wd, _ := os.Getwd()
-	return fmt.Sprintf("%v", wd)
+	log.Println("Version called")
+	currdir, _ := os.Getwd()
+	dir, err := ioutil.ReadDir(currdir)
+	var listf []string
+	for _, info := range dir {
+		listf = append(listf, info.Name())
+	}
+	if err != nil {
+		return fmt.Sprintf("%v", err)
+	}
+	return fmt.Sprintf("%s", listf)
 }
 
 func (hs *HugoServer) stop() string {
