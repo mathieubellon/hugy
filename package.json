@@ -28,7 +28,7 @@
     "fkill": "^6.2.0",
     "fs-extra": "^8.1.0",
     "gray-matter": "^4.0.2",
-    "isomorphic-git": "^0.70.5",
+    "isomorphic-git": "^1.8.2",
     "localforage": "^1.7.3",
     "lodash": "^4.17.15",
     "rehype-format": "^3.0.0",
