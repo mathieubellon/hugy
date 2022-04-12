@@ -40,7 +40,7 @@
     "remark-stringify": "^7.0.3",
     "sass": "^1.23.3",
     "sass-loader": "^8.0.0",
-    "simple-git": "^1.126.0",
+    "simple-git": "^3.5.0",
     "tailwindcss": "^1.2.0",
     "tiptap": "^1.26.4",
     "tiptap-extensions": "^1.28.4",
